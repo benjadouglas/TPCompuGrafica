@@ -1,0 +1,35 @@
+import moderngl
+import pyglet
+
+class window(pyglet.window.Window):
+    def _init_(self, width, height, title):
+        super()._init_(width, height, title, resizable = True)
+        self.ctx = moderngl.create_context()
+        self.scene = None
+    
+    def set_scene(self, scene):
+        self.scene = scene
+    
+    def on_draw(self): # se ejecuta por cada frame
+        self.clear()
+        self.ctx.clear()
+        if self.scene:
+            self.scene.render()
+    
+    def on_resize(self, width, height):
+        if self.scene:
+            self.scene.on_resize(width, height)
+    
+    def run(self): # activar el loop de la ventana
+        pyglet.app.run()
+
+        def on_mouse_press(self, x, y, button, modifiers):
+            if self.scene is None:
+                return
+            
+            u=x/self.width
+            v=y/self.height
+            self.scene.on_mouse_click(u,v)
+            def on_resize(self, width, height):
+                if self.scene:
+                    self.scene.on_resize(width, height)
