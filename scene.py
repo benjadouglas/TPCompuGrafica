@@ -7,40 +7,26 @@ class Scene:
         self.objects = []
         self.graphics = {}
         self.camera = camera
+        self.model = glm.mat4(1)
+        self.view = camera.get_view_matrix()
+        self.projection = camera.get_perspective_matrix()
 
     def add_object(self, obj, shader_program):
         self.objects.append(obj)
         self.graphics[obj.name] = Graphics(self.ctx, shader_program, obj.vertices, obj.indices)
 
     def render(self):
-        # Clear the screen
-        self.ctx.clear(0.1, 0.1, 0.1, 1.0)
-        self.ctx.enable(self.ctx.DEPTH_TEST)
+       self.time += 0.01
+       for obj in self.objects:
+           obj.rotation.x += 0.8
+           obj.rotation.y += 0.6
+           obj.rotation.z += 0.4
+           obj.position.x += math.sin(self.time) *0.01
+           model = obj.get_model_matrix()
+           mvp = self.projection * self.view * model
+           self.graphics[obj.name].set_uniform('Mvp', mvp)
+           self.graphics[obj.name].vao.render()
 
-        # Get camera matrices
-        view = self.camera.get_view_matrix()
-        projection = self.camera.get_perspective_matrix()
-
-        # Add rotation to each object to show 3D
-        for i, obj in enumerate(self.objects):
-            # Cubes rotate in Y, sphere rotates in X and Y
-            if obj.name == "Cube1":
-                obj.rotation.y += 1.0  # Cube1: clockwise
-            elif obj.name == "Cube2":
-                obj.rotation.y -= 1.0  # Cube2: counterclockwise
-            elif obj.name.startswith("Sphere"):
-                obj.rotation.x += 1.0
-                obj.rotation.y += 1.0
-            model = obj.get_model_matrix()
-            mvp = projection * view * model
-
-            # Set the MVP uniform
-            graphics_obj = self.graphics[obj.name]
-            if 'Mvp' in graphics_obj.vao.program:
-                graphics_obj.vao.program['Mvp'].write(mvp.to_bytes())
-
-            # Render
-            graphics_obj.vao.render()
 
     def on_mouse_click(self, u, v):
         ray = self.camera.raycast(u, v)

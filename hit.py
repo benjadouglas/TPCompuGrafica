@@ -16,13 +16,13 @@ class Hit:
     def check_hit(self, origin, direction):
         raise NotImplementedError("Subclass should implement this\n")
 
-class HitBox:
+class HitBox(Hit):
     def __init__(self,  position = (0, 0, 0), scale = (1, 1, 1)):
         super().__init__(position, scale)
 
     def check_hit(self, origin, direction):
-        origin = glm.vec3(*origin)
-        direction = glm.normalize(*direction)
+        origin = glm.vec3(origin)
+        direction = glm.normalize(glm.vec3(direction))
 
         min_bounds = self.position - self.scale
         max_bounds = self.position + self.scale
