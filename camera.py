@@ -19,12 +19,12 @@ class Camera:
     def raycast(self, u, v):
         fov_adjustement = glm.tan(glm.radians(self.fov) / 2)
         ndc_x = (2 * u - 1) * self.aspect * fov_adjustement
-        ndc_y = (1 - 2 * v) * fov_adjustement
+        ndc_y = (2 * v - 1) * fov_adjustement
 
         ray_dir_camera = glm.normalize(glm.vec3(ndc_x, ndc_y, -1.0))
 
         view = self.get_view_matrix()
         inv_view = glm.inverse(view)
-        ray_dir_world = glm.vec3(inv_view * glm.vec4(ray_dir_camera, 0.0))
+        ray_dir_world = glm.normalize(glm.vec3(inv_view * glm.vec4(ray_dir_camera, 0.0)))
 
         return Ray(self.position, ray_dir_world)

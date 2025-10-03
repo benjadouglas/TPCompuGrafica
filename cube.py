@@ -1,4 +1,4 @@
-from hit import HitBox
+from hit import HitBox, HitBoxOBB
 import numpy as np
 import glm
 
@@ -8,8 +8,8 @@ class Cube:
         self.position = glm.vec3(*position)
         self.rotation = glm.vec3(*rotation)
         self.scale = glm.vec3(*scale)
-        self._colision= HitBox(position,scale)
-        
+        self._colision= HitBoxOBB(get_model_matrix = lambda: self.get_model_matrix())
+
         # Array para crear el VBO: Vertex Buffer Object: almacena los vértices y colores de un cubo
         self.vertices = np.array([
             # posiciones        # colores
@@ -22,7 +22,7 @@ class Cube:
              1,  1,  1,        1, 1, 1,
             -1,  1,  1,        0, 0, 0
         ], dtype='f4')
-        
+
         # Array para crear el IBO: Index Buffer Object: define las caras del cubo
         self.indices = np.array([
             0, 1, 2, 2, 3, 0,  # atrás
@@ -35,7 +35,7 @@ class Cube:
 
     def check_hit(self,origin, direction):
         return self._colision.check_hit(origin, direction)
-    
+
     def get_model_matrix(self):
         model=glm.mat4(1)
         model=glm.translate(model,self.position)
