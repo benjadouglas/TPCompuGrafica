@@ -5,17 +5,19 @@ from shader_program import ShaderProgram
 from cube import Cube
 from quad import Quad
 from camera import Camera
-from scene import Scene
-import numpy as np
+from scene import Scene, RayScene
 
 # --- Loop principal ---
+WIDTH, HEIGHT = 800, 600
 
-window = Window(800, 600, "Basic Graphic Engine")
+window = Window(WIDTH, HEIGHT, "Basic Graphic Engine")
 
 shader_program = ShaderProgram(window.ctx, 'shaders/basic.vert', 'shaders/basic.frag')
-shader_program_skybox = ShaderProgram(window.ctx, 'shaders/sprite.vert', 'shaders/sprite.frag')
+shader_program_skybox = ShaderProgram(
+    window.ctx, 'shaders/sprite.vert', 'shaders/sprite.frag'
+)
 
-skybox_texture = Texture(image_data=np.array([120, 175, 195, 255], dtype='u1'))
+skybox_texture = Texture(width=WIDTH, height=HEIGHT, channels_amount=3, color=(0, 0, 0))
 
 material = Material(shader_program)
 material_sprite = Material(shader_program_skybox, textures_data=[skybox_texture])
@@ -26,7 +28,7 @@ quad = Quad((0, 0, 0), (0, 0, 0), (6, 5, 1), name="Sprite")
 
 camera = Camera((0, 0, 10), (0, 0, 0), (0, 1, 0), 45, window.width / window.height, 0.1, 100.0)
 
-scene = Scene(window.ctx, camera)
+scene = RayScene(window.ctx, camera, WIDTH, HEIGHT)
 
 scene.add_object(quad, material_sprite)
 scene.add_object(cube1, material)
