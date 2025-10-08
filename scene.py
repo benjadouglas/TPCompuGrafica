@@ -11,9 +11,9 @@ class Scene:
         self.view = camera.get_view_matrix()
         self.projection = camera.get_perspective_matrix()
 
-    def add_object(self, obj, shader_program):
-        self.objects.append(obj)
-        self.graphics[obj.name] = Graphics(self.ctx, shader_program, obj.vertices, obj.indices)
+    def add_object(self, material, model):
+        self.objects.append(model)
+        self.graphics[model.name] = Graphics(self.ctx, model, material)
 
     def render(self):
        self.time += 0.01
