@@ -10,3 +10,13 @@ class Texture:
         self.repeat_x = repeat_x
         self.repeat_y = repeat_y
         self.build_mipmaps = build_mipmaps
+
+class ImageData:
+    def __init__(self, height, width, channels, color=(0, 0, 0)):
+        self.data = np.full((height, width, channels), color, dtype=np.uint8)
+
+    def set_pixel(self, x, y, color):
+        self.data[y, x] = color  # ojo invertido!! es (y,x), no (x,y)
+
+    def tobytes(self):
+        return self.data.tobytes()
