@@ -5,15 +5,15 @@ class Vertex:
         self.__array = array
 
     @property
-    def name(self)
+    def name(self):
         return self.__name
 
     @property
-    def format(self)
+    def format(self):
         return self.__format
 
     @property
-    def array(self)
+    def array(self):
         return self.__array
 
 class VertexLayout:
