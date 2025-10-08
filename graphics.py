@@ -4,10 +4,13 @@ class Graphics:
         self.__model = model
         self.__material = material
 
-        self.vbo = self.create_buffers()
-        self.ibo = ctx.buffer(model.indices.tobytes())
-        self.vao = ctx.vertex_array(material.shader_program.prog, [*self.__vbo], self.__ibo)
-        self.textures = self.load_textures(material.textures_data)
+        self.__vbo = self.create_buffers()
+        self.__ibo = ctx.buffer(model.indices.tobytes())
+        self.__vao = ctx.vertex_array(
+            material.shader_program.prog, [*self.__vbo], self.__ibo
+        )
+
+        self.__textures = self.load_textures(material.textures_data)
 
     def create_buffers(self):
         buffers = []
@@ -19,15 +22,17 @@ class Graphics:
             return buffers
 
     def load_textures(self, textures_data):
-        textures = []
+        textures = {}
         for texture in textures_data:
             if texture.image_data:
-                texture_ctx = self.__ctx.texture(texture.size, texture.channels_amount, texture.image_data)
+                texture_ctx = self.__ctx.texture(
+                    texture.size, texture.channels_amount, texture.get_bytes()
+                )
                 if texture.build_mipmaps:
                     texture_ctx.build_mipmaps()
                 texture_ctx.repeat_x = texture.repeat_x
                 texture_ctx.repeat_y = texture.repeat_y
-                textures.append((texture.name, texture_ctx))
+                textures[texture.name] = (texture, texture_ctx)
         return textures
 
     def render(self, uniforms):
@@ -35,11 +40,19 @@ class Graphics:
             if name in self.__material.shader_program.prog:
                 self.__material.set_uniform(name, value)
 
-        for i, (name, texture_ctx) in enumerate(self.__textures):
-            texture_ctx.use(i)
+        for i, (name, (tex, tex_ctx)) in enumerate(self.__textures.items()):
+            tex_ctx.use(i)
             self.__material.shader_program.set_uniform(name, i)
+
         self.__vao.render()
 
+    def update_texture(self, texture_name, new_data):
+        if texture_name not in self.__textures:
+            raise ValueError(f"No existe la textura {texture_name}")
+
+        texture_obj, texture_ctx = self.__textures[texture_name]
+        texture_obj.update_data(new_data)
+        texture_ctx.write(texture_obj.get_bytes())
 
     def set_shader(self, shader_program):
         self.shader_program = shader_program.program
