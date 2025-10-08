@@ -8,9 +8,9 @@ class ShaderProgram:
             vertex_shader = file.read()
 
         with open(fragment_shader_path) as file:
-            fragment_shader = f.read()
+            fragment_shader = file.read()
 
-        self.prog = self.ctx.program(vertex_shader=vertex_shader, fragment_shader=fragment_shader )
+        self.prog = ctx.program(vertex_shader=vertex_shader, fragment_shader=fragment_shader )
         attributes = []
         uniforms = []
         for name in self.prog:
@@ -18,7 +18,7 @@ class ShaderProgram:
             if type(member) is Attribute:
                 attributes.append(name)
             if type(member) is moderngl.Uniform:
-                uniforms.append(namel)
+                uniforms.append(name)
         self.attributes = list(attributes)
         self.uniforms = uniforms
 
