@@ -24,13 +24,13 @@ class Window(pyglet.window.Window):
     def run(self): # activar el loop de la ventana
         pyglet.app.run()
 
-        def on_mouse_press(self, x, y, button, modifiers):
-            if self.scene is None:
-                return
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.scene is None:
+            return
+        u=x/self.width
+        v=y/self.height
+        self.scene.on_mouse_click(u,v)
 
-            u=x/self.width
-            v=y/self.height
-            self.scene.on_mouse_click(u,v)
-            def on_resize(self, width, height):
-                if self.scene:
-                    self.scene.on_resize(width, height)
+    def on_resize(self, width, height):
+        if self.scene:
+            self.scene.on_resize(width, height)
