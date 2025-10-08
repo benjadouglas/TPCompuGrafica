@@ -7,7 +7,7 @@ class Hit:
 
     @property
     def model_matrix(self):
-        return self.__model_matrix__()
+        return self.__model_matrix()
 
     @property
     def position(self):
@@ -73,7 +73,7 @@ class HitBoxOBB(Hit):
         t1 = glm.min(tmin, tmax)
         t2 = glm.max(tmin, tmax)
 
-        t_near = glm.min(t1.x, t1.y, t1.z)
-        t_far = glm.max(t2.x, t2.y, t2.z)
+        t_near = glm.max(t1.x, t1.y, t1.z)
+        t_far = glm.min(t2.x, t2.y, t2.z)
 
         return t_near <= t_far and t_far >= 0
