@@ -4,13 +4,14 @@ import numpy as np
 import glm
 
 class Quad(Model):
-    def __init__(self, position=(0,0,0), rotation=(0,0,0), scale=(1,1,1), name="quad"):
+    def __init__(self, position=(0, 0, 0), rotation=(0, 0, 0), scale=(1, 1, 1), name="quad", hittable=True):
         self.name = name
         self.position = glm.vec3(*position)
         self.rotation = glm.vec3(*rotation)
         self.scale = glm.vec3(*scale)
-        self._colision = HitBoxOBB(get_model_matrix = lambda: self.get_model_matrix())
-
+        self.__colision = HitBoxOBB(
+            get_model_matrix=lambda: self.get_model_matrix(), hittable=hittable
+        )
         vertices = np.array([
             -1, -1, 0,
              1, -1, 0,
