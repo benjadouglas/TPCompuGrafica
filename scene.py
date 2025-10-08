@@ -1,5 +1,6 @@
 from graphics import Graphics
 import glm
+from raytracer import RayTracer
 
 class Scene:
     def __init__(self, ctx, camera):
@@ -10,6 +11,9 @@ class Scene:
         self.model = glm.mat4(1)
         self.view = camera.get_view_matrix()
         self.projection = camera.get_perspective_matrix()
+
+    def start(self):
+        print("Start!")
 
     def add_object(self, material, model):
         self.objects.append(model)
@@ -37,3 +41,23 @@ class Scene:
     def on_resize(self, width, height):
         self.ctx.viewport = (0, 0, width, height)
         self.camera.aspect = width / height if height != 0 else 1.0
+
+class RayScene(Scene):
+    def __init__(self, ctx, camera, width, height):
+        super().__init__(ctx, camera)
+        self.raytracer = RayTracer(camera, width, height)
+
+    def start(self):
+        self.raytracer.render_frame(self.objects)
+        if "Sprite" in self.graphics:
+            self.graphics["Sprite"].update_texture(
+                "u_texture", self.raytracer.get_texture()
+            )
+
+    def render(self):
+        super().render()
+
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
+        self.raytracer = RayTracer(self.camera, width, height)
+        self.start()
