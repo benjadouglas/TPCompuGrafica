@@ -1,6 +1,7 @@
 from graphics import Graphics
 import glm
 from raytracer import RayTracer
+import math
 
 class Scene:
     def __init__(self, ctx, camera):
@@ -11,25 +12,25 @@ class Scene:
         self.model = glm.mat4(1)
         self.view = camera.get_view_matrix()
         self.projection = camera.get_perspective_matrix()
+        self.time = 0.0
 
     def start(self):
         print("Start!")
 
-    def add_object(self, material, model):
+    def add_object(self, model, material):
         self.objects.append(model)
         self.graphics[model.name] = Graphics(self.ctx, model, material)
 
     def render(self):
-       self.time += 0.01
-       for obj in self.objects:
-           obj.rotation.x += 0.8
-           obj.rotation.y += 0.6
-           obj.rotation.z += 0.4
-           obj.position.x += math.sin(self.time) *0.01
-           model = obj.get_model_matrix()
-           mvp = self.projection * self.view * model
-           self.graphics[obj.name].set_uniform('Mvp', mvp)
-           self.graphics[obj.name].vao.render()
+        self.time += 0.01
+        for obj in self.objects:
+            if (obj.name != "Sprite"):
+                obj.rotation += glm.vec3(0.8, 0.6, 0.4)
+                obj.position.x += math.sin(self.time) * 0.01
+            model = obj.get_model_matrix()
+            mvp = self.projection * self.view * model
+            # print(mvp)
+            self.graphics[obj.name].render({'Mvp':mvp})
 
 
     def on_mouse_click(self, u, v):

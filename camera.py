@@ -17,7 +17,7 @@ class Camera:
         self.__sky_color_top = glm.vec3(*top)
         self.__sky_color_bottom = glm.vec3(*bottom)
 
-    def get_ski_gradient(self, height):
+    def get_sky_gradient(self, height):
         point = pow(0.5 * (height + 1.0), 1.5)
         return (1.0 - point) * self.__sky_color_bottom + point * self.__sky_color_top
 
@@ -32,10 +32,11 @@ class Camera:
         ndc_x = (2 * u - 1) * self.aspect * fov_adjustement
         ndc_y = (2 * v - 1) * fov_adjustement
 
-        ray_dir_camera = glm.normalize(glm.vec3(ndc_x, ndc_y, -1.0))
+        ray_dir_camera = glm.vec3(ndc_x, ndc_y, -1.0)
+        ray_dir_camera = glm.normalize(ray_dir_camera)
 
         view = self.get_view_matrix()
         inv_view = glm.inverse(view)
-        ray_dir_world = glm.normalize(glm.vec3(inv_view * glm.vec4(ray_dir_camera, 0.0)))
+        ray_dir_world = glm.vec3(inv_view * glm.vec4(ray_dir_camera, 0.0))
 
         return Ray(self.position, ray_dir_world)

@@ -6,7 +6,7 @@ class ImageData:
         self.data = np.full((height, width, channels), color, dtype=np.uint8)
 
     def set_pixel(self, x, y, color):
-        self.data[y, x] = color  # ojo invertido!! es (y,x), no (x,y)
+        self.data[y, x] = color
 
     def tobytes(self):
         return self.data.tobytes()

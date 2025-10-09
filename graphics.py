@@ -19,7 +19,7 @@ class Graphics:
             if attribute.name in shader_attributes:
                 vbo = self.__ctx.buffer(attribute.array.tobytes())
                 buffers.append((vbo, attribute.format, attribute.name))
-            return buffers
+        return buffers
 
     def load_textures(self, textures_data):
         textures = {}
@@ -39,6 +39,7 @@ class Graphics:
         for name, value in uniforms.items():
             if name in self.__material.shader_program.prog:
                 self.__material.set_uniform(name, value)
+                print(name)
 
         for i, (name, (tex, tex_ctx)) in enumerate(self.__textures.items()):
             tex_ctx.use(i)
@@ -55,7 +56,7 @@ class Graphics:
         texture_ctx.write(texture_obj.get_bytes())
 
     def set_shader(self, shader_program):
-        self.shader_program = shader_program.program
+        self.__material.shader_program = shader_program.program
 
     def set_uniform(self, name, value):
-        self.shader_program.set_uniform(name, value)
+        self.__material.shader_program.set_uniform(name, value)

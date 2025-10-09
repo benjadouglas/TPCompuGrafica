@@ -1,5 +1,6 @@
 from ast import Attribute
 import moderngl
+import glm
 
 class ShaderProgram:
     def __init__(self, ctx, vertex_shader_path, fragment_shader_path):
@@ -38,4 +39,4 @@ class ShaderProgram:
 
     def get_program(self):
         """Retorna el objeto program de ModernGL."""
-        return self.program
+        return self.prog

@@ -5,10 +5,10 @@ class Ray:
         self.__origin = glm.vec3(*origin)
         self.__direction = glm.normalize(glm.vec3(*direction)) #
 
-        @property
-        def origin(self) -> glm.vec3:
-            return self.__origin
+    @property
+    def origin(self) -> glm.vec3:
+        return self.__origin
 
-        @property
-        def direction(self) -> glm.vec3:
-            return self.__direction
+    @property
+    def direction(self) -> glm.vec3:
+        return self.__direction

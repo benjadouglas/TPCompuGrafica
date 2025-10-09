@@ -9,15 +9,14 @@ class Quad(Model):
         self.position = glm.vec3(*position)
         self.rotation = glm.vec3(*rotation)
         self.scale = glm.vec3(*scale)
-        self.__colision = HitBoxOBB(
-            get_model_matrix=lambda: self.get_model_matrix(), hittable=hittable
-        )
+        self.__colision = HitBoxOBB(get_model_matrix=lambda: self.get_model_matrix(), hittable=hittable)
         vertices = np.array([
             -1, -1, 0,
-             1, -1, 0,
-             1,  1, 0,
+            1, -1, 0,
+            1,  1, 0,
             -1,  1, 0,
-        ], dtype='f4')
+        ], dtype="f4")
+
 
         colors = np.array([
             0,1,1,
@@ -26,12 +25,14 @@ class Quad(Model):
             1,1,0
         ], dtype='f4')
 
+
         texcoords = np.array([
             0, 0,
             1, 0,
             1, 1,
             0, 1,
-        ], dtype='f4')
+        ], dtype="f4")
+
 
         normals = np.array([
             0, 0, 1,
@@ -40,15 +41,17 @@ class Quad(Model):
             0, 0, 1,
         ], dtype="f4")
 
+
         indices = np.array([
             0, 1, 2,
             2, 3, 0
         ], dtype="i4")
 
-        super().__init__(vertices, indices, colors=colors, texcoords=texcoords, normals=normals)
+        super().__init__(vertices, indices, colors= colors, texcoords=texcoords, normals=normals)
+
 
     def check_hit(self, origin, direction):
-        return self._colision.check_hit(origin, direction)
+        return self.__colision.check_hit(origin, direction)
 
     def get_model_matrix(self):
         model = glm.mat4(1)

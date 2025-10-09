@@ -18,19 +18,18 @@ class Vertex:
 
 class VertexLayout:
     def __init__(self):
-        self.__atributes = []
+        self.__attributes = []
 
-    def add_atribute(self, name: str, format: str, array):
-        self.__atributes.append(Vertex(name, format, array))
+    def add_attribute(self, name: str, format: str, array):
+        self.__attributes.append(Vertex(name, format, array))
 
     def get_attributes(self):
-        return self.__atributes
+        return self.__attributes
 
 class Model:
     def __init__(self, vertices=None, indices=None, colors=None, normals=None, texcoords=None):
         self.indices = indices
         self.vertex_layout = VertexLayout()
-
         if vertices is not None:
             self.vertex_layout.add_attribute("in_pos", "3f", vertices)
         if colors is not None:
