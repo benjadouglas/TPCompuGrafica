@@ -1,4 +1,4 @@
-from ast import Attribute
+from moderngl import Attribute
 import moderngl
 import glm
 
