@@ -27,3 +27,23 @@ class RayTracer:
 
     def get_texture(self):
         return self.framebuffer.image_data
+class RayTracerGPU:
+    def __init__(self, ctx, camera, width, height, output_graphics):
+        self.ctx = ctx
+        self.width, self.height = width, height
+        self.camera = camera
+        self.width = width
+        self.height = height
+        self.compute_shader = ComputeShaderProgram(self.ctx, "shaders/raytracing.comp")
+        self.output_graphics = output_graphics
+
+        self.texture_unit = 0
+        self.output_texture = Texture("u_texture", self.width, self.height, 4, None, (255, 255, 255, 255))
+        self.output_graphics.update_texture("u_texture", self.output_texture.image_data)
+        self.output_graphics.bind_to_image("u_texture", 0, read=False, write=True)
+
+    def resize(self, width, height):
+        self.width, self.height = width, height
+        self.output_texture = Texture("u_texture", width, height, 4, None, (255, 255, 255, 255))
+        self.output_graphics.update_texture("u_texture", self.output_texture.image_data)
+
