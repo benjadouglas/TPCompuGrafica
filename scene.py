@@ -99,6 +99,7 @@ class RaySceneGPU(Scene):
             if (self.raytracer is not none):
                 self._update_matrix()
                 self._matrix_to_ssbo()
+                self.raytracer.run()
                
     def on_resize(self, width, height):
         super().on_resize(width, height)
