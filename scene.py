@@ -121,3 +121,11 @@ def _matrix_to_ssbo(self):
     self.raytracer.matrix_to_ssbo(self.inv_f, 1)
     self.raytracer.matrix_to_ssbo(self.mats_f, 2)
     self.raytracer.primitives_to_ssbo(self.primitives, 3)
+
+def run(self):
+    groups_x = (self.width + 15) // 16
+    groups_y = (self.height + 15) // 16
+
+    self.compute_shader.run(groups_x=groups_x, groups_y=groups_y, groups_z=1)
+    self.ctx.clear(0.0, 0.0, 0.0, 1.0)
+    self.output_graphics.render({"u_texture": self.texture_unit})
