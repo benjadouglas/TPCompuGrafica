@@ -26,6 +26,9 @@ class Camera:
 
     def get_view_matrix(self):
         return glm.lookAt(self.position, self.target, self.up)
+    
+    def get_inverse_view_matrix(self):
+        return glm.inverse(self.get_view_matrix())
 
     def raycast(self, u, v):
         fov_adjustement = glm.tan(glm.radians(self.fov) / 2)

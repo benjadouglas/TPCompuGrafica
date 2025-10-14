@@ -36,6 +36,9 @@ class RayTracerGPU:
         self.height = height
         self.compute_shader = ComputeShaderProgram(self.ctx, "shaders/raytracing.comp")
         self.output_graphics = output_graphics
+        self.compute_shader.set_uniform('cameraPosition', self.camera.position)
+        self.compute_shader.set_uniform('inverseViewMatrix', self.camera.get_inverse_view_matrix())
+        self.compute_shader.set_uniform('fieldOfView', self.camera.fov)
 
         self.texture_unit = 0
         self.output_texture = Texture("u_texture", self.width, self.height, 4, None, (255, 255, 255, 255))
