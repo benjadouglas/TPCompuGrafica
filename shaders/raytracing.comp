@@ -41,6 +41,8 @@ bool intersectAxisAlignedBox(vec3 rayOrigin, vec3 rayDirection,
 bool intersectOrientedBox(int objectIndex, vec3 rayOriginWorld, vec3 rayDirectionWorld,
                           out float hitDistance, out vec3 hitPosition, out vec3 hitNormal);
 
+RayHit traverseBoundingVolumeHierarchy(vec3 rayOrigin, vec3 rayDirection);
+
 void main() {
     ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
     ivec2 imageSize   = imageSize(outputImage);
@@ -57,16 +59,9 @@ void main() {
     vec3 rayDirection = normalize((inverseViewMatrix * vec4(rayDirCamera, 0.0)).xyz);
     vec3 rayOrigin    = (inverseViewMatrix * vec4(cameraPosition, 1.0)).xyz;
 
-    float hitDistance;
-    vec3  hitPosition, hitNormal;
-    vec3  finalColor;
+    RayHit h = traverseBoundingVolumeHierarchy(rayOrigin, rayDirection);
 
-    if (intersectOrientedBox(0, rayOrigin, rayDirection, hitDistance, hitPosition, hitNormal)) {
-        finalColor = 0.5 * (hitNormal + vec3(1.0)); // normales visualizadas
-    } else {
-        finalColor = vec3(0.0, 0.0, 0.0);
-    }
-
+    vec3 finalColor = h.didHit ? h.normal : vec3(0.0);
     imageStore(outputImage, pixelCoords, vec4(finalColor, 1.0));
 }
 
@@ -104,4 +99,60 @@ bool intersectOrientedBox(int objectIndex, vec3 rayOriginWorld, vec3 rayDirectio
     hitDistance = dot(hitPosition - rayOriginWorld, rayDirectionWorld);
 
     return hitDistance > EPS;
+}
+
+RayHit traverseBoundingVolumeHierarchy(vec3 rayOrigin, vec3 rayDirection) {
+    RayHit closestHit;
+    closestHit.didHit = false;
+    closestHit.distance = 1e20;
+    closestHit.position = vec3(0.0);
+    closestHit.normal = vec3(0.0);
+    closestHit.color = vec3(0.0);
+    closestHit.reflectivity = 0.0;
+
+    int nodeStack[32];
+    int stackPointer = 0;
+    nodeStack[stackPointer++] = 0;
+
+    while (stackPointer > 0) {
+        int nodeIndex = nodeStack[--stackPointer];
+        vec4 boundingBoxMin = bvhNodes[nodeIndex];
+        vec4 boundingBoxMax = bvhNodes[nodeIndex + 1];
+
+        float timeNear, timeFar;
+        bool intersects = intersectAxisAlignedBox(
+            rayOrigin, rayDirection,
+            boundingBoxMin.xyz, boundingBoxMax.xyz,
+            timeNear, timeFar
+        );
+        if (!intersects || timeNear >= closestHit.distance) continue;
+
+        int leftChildIndex = int(boundingBoxMin.w);
+        int rightChildOrPrimitiveIndex = int(boundingBoxMax.w);
+
+        if (rightChildOrPrimitiveIndex >= 0) {
+            float hitDist;
+            vec3 hitPos, hitNorm;
+            if (intersectOrientedBox(rightChildOrPrimitiveIndex,
+                                     rayOrigin, rayDirection,
+                                     hitDist, hitPos, hitNorm)
+                && hitDist < closestHit.distance) {
+
+                closestHit.didHit = true;
+                closestHit.distance = hitDist;
+                closestHit.position = hitPos;
+                closestHit.normal = hitNorm;
+                vec4 material = materialData[rightChildOrPrimitiveIndex];
+                closestHit.color = material.rgb;
+                closestHit.reflectivity = material.a;
+            }
+        } else {
+            if (leftChildIndex >= 0)
+                nodeStack[stackPointer++] = leftChildIndex * 2;
+            int rightChildIndex = -rightChildOrPrimitiveIndex - 2;
+            if (rightChildIndex >= 0)
+                nodeStack[stackPointer++] = rightChildIndex * 2;
+        }
+    }
+    return closestHit;
 }
