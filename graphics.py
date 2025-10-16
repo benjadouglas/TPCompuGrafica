@@ -43,7 +43,6 @@ class Graphics:
         for name, value in uniforms.items():
             if name in self.__material.shader_program.prog:
                 self.__material.set_uniform(name, value)
-                print(name)
 
         for i, (name, (tex, tex_ctx)) in enumerate(self.__textures.items()):
             tex_ctx.use(i)

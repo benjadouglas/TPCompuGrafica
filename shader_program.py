@@ -1,4 +1,4 @@
-from moderngl import Attribute
+from moderngl import Attribute, Uniform
 import moderngl
 import glm
 
@@ -41,11 +41,12 @@ class ShaderProgram:
         """Retorna el objeto program de ModernGL."""
         return self.prog
 
-class ShaderProgram:
+class ComputerShaderProgram:
     def __init__(self,ctx,compute_shader_path):
         with open(compute_shader_path) as file:
             compute_source = file.read()
         self.prog = ctx.compute_shader(compute_source)
+
         uniforms = []
         for name in self.prog:
             member = self.prog[name]
@@ -60,14 +61,7 @@ class ShaderProgram:
                 uniform.write(value.to_bytes())
             elif hasattr(uniform, "value"):
                 uniform.value = value
-    
-    def run(self):
-     groups_x = (self.width + 15) // 16
-     groups_y = (self.height + 15) // 16
 
-     self.compute_shader.run(groups_x=groups_x, groups_y=groups_y, groups_z=1)
-     self.ctx.clear(0.0, 0.0, 0.0, 1.0)
-     self.output_graphics.render({"u_texture": self.texture_unit})
 
-def run(self, groups_x, groups_y, groups_z=1):
-    self.prog.run(group_x=groups_x, group_y=groups_y, group_z=groups_z)
+    def run(self, groups_x, groups_y, groups_z=1):
+        self.prog.run(group_x=groups_x, group_y=groups_y, group_z=groups_z)

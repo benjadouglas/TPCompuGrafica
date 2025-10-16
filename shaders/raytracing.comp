@@ -59,9 +59,16 @@ void main() {
     vec3 rayDirection = normalize((inverseViewMatrix * vec4(rayDirCamera, 0.0)).xyz);
     vec3 rayOrigin    = (inverseViewMatrix * vec4(cameraPosition, 1.0)).xyz;
 
-    RayHit h = traverseBoundingVolumeHierarchy(rayOrigin, rayDirection);
+    vec3 finalcolor;
 
-    vec3 finalColor = h.didHit ? h.normal : vec3(0.0);
+    RayHit hit = traverseBoundingVolumeHierarchy(rayOrigin, rayDirection);
+
+    if (hit.didHit) {
+        finalcolor = calculateShading(hit.color, hit.position, hit.normal, -rayDirection);
+    } else {
+        finalColor = vec3(0.0);
+    }
+
     imageStore(outputImage, pixelCoords, vec4(finalColor, 1.0));
 }
 
@@ -155,4 +162,24 @@ RayHit traverseBoundingVolumeHierarchy(vec3 rayOrigin, vec3 rayDirection) {
         }
     }
     return closestHit;
+}
+
+float calculateShadow(vec3 surfacePosition, vec3 surfaceNormal) {
+    vec3 shoadowRayOrigin = surfacePosition + surfaceNormal * EPS;
+    return traverseBoundingVolumeHierarchy(shoadowRayOrigin, LIGHT_DIRECTION).didHit ? 0.3 : 1.0;
+}
+
+vec3 calculateShading(vec3 surfaceColor, vec3 surfacePosition, vec3 surfaceNormal, vec3 viewDirection) {
+    float diffuseIntensity = max(dot(surfaceNormal, LIGHT_DIRECTION), 0.0);
+    float specularIntensity = pow(max(dot(normalize(LIGHT_DIRECTION + viewDirection), surfaceNormal), 0.0), 64);
+    float ambientFactor = 0.08;
+    float shadowFactor = calculateShadow(surfacePosition, surfaceNormal)
+
+    vec3 ambient = ambientFactor * surfaceColor;
+    vec3 diffuse = diffuseIntensity * surfaceColor;
+    vec3 specular = specularIntensity * LIGHT_COLOR;
+    vec3 shadow = shadowFactor * (diffuse + specular);
+
+    vec3 shadedColor = ambient + shadow;
+    return shadedColor;
 }
