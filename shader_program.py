@@ -41,7 +41,7 @@ class ShaderProgram:
         """Retorna el objeto program de ModernGL."""
         return self.prog
 
-class ComputerShaderProgram:
+class ComputeShaderProgram:
     def __init__(self,ctx,compute_shader_path):
         with open(compute_shader_path) as file:
             compute_source = file.read()

@@ -1,4 +1,4 @@
-from hit import HitBox, HitBoxOBB
+from hit import HitBoxOBB
 import numpy as np
 import glm
 from model import Model
@@ -10,8 +10,7 @@ class Cube(Model):
         self.position = glm.vec3(*position)
         self.rotation = glm.vec3(*rotation)
         self.scale = glm.vec3(*scale)
-        self.__colision = HitBoxOBB(get_model_matrix = lambda: self.get_model_matrix(), hittable = hittable)
-
+        self.__colision = HitBoxOBB(get_model_matrix=lambda: self.get_model_matrix(), hittable=hittable)
 
         vertices = np.array([
             -1,-1,-1,  1,-1,-1,  1,1,-1, -1,1,-1,
@@ -54,6 +53,12 @@ class Cube(Model):
 
     def check_hit(self, origin, direction):
         return self.__colision.check_hit(origin, direction)
+
+    def update(self, delta_time):
+        if self.animated:
+            self.rotation.x += 30 * delta_time  # 30 grados por segundo en X
+            self.rotation.y += 45 * delta_time  # 45 grados por segundo en Y
+            self.rotation.z += 20 * delta_time  # 20 grados por segundo en Z
 
     def get_model_matrix(self):
         model = glm.mat4(1)
