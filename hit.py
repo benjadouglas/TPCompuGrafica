@@ -54,6 +54,9 @@ class HitBoxOBB(Hit):
         super().__init__(get_model_matrix, hittable)
 
     def check_hit(self, origin, direction):
+        if(not self.hittable):
+            return False
+
         origin = glm.vec3(origin)
         direction = glm.normalize(glm.vec3(direction))
 
@@ -65,7 +68,7 @@ class HitBoxOBB(Hit):
         local_dir = glm.normalize(glm.vec3(local_dir))
 
         min_bounds = glm.vec3(-1, -1, -1)
-        max_bounds = glm.vec3(1, 1, 1,)
+        max_bounds = glm.vec3(1, 1, 1)
 
         tmin = (min_bounds - local_origin) / local_dir
         tmax = (max_bounds - local_origin) / local_dir

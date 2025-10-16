@@ -49,7 +49,7 @@ class Quad(Model):
         ], dtype="i4")
 
         self.__vertices = vertices
-        super().__init__(vertices, indices, colors, texcoords, normals)
+        super().__init__(vertices, indices, colors=colors, texcoords=texcoords, normals=normals)
 
     @property
     def aabb(self):
@@ -64,6 +64,10 @@ class Quad(Model):
 
     def check_hit(self, origin, direction):
         return self.__colision.check_hit(origin, direction)
+
+    def update(self, delta_time):
+        if self.animated:
+            self.rotation.y += 20 * delta_time
 
     def get_model_matrix(self):
         model = glm.mat4(1)

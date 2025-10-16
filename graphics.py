@@ -1,3 +1,5 @@
+import numpy as np
+import glm
 class Graphics:
     def __init__(self, ctx, model, material):
         self.__ctx = ctx
@@ -6,10 +8,7 @@ class Graphics:
 
         self.__vbo = self.create_buffers()
         self.__ibo = ctx.buffer(model.indices.tobytes())
-        self.__vao = ctx.vertex_array(
-            material.shader_program.prog, [*self.__vbo], self.__ibo
-        )
-
+        self.__vao = ctx.vertex_array(material.shader_program.prog, [*self.__vbo], self.__ibo)
         self.__textures = self.load_textures(material.textures_data)
 
     def create_buffers(self):
@@ -44,8 +43,8 @@ class Graphics:
             if name in self.__material.shader_program.prog:
                 self.__material.set_uniform(name, value)
 
-        for i, (name, (tex, tex_ctx)) in enumerate(self.__textures.items()):
-            tex_ctx.use(i)
+        for i, (name, (tex, texture_ctx)) in enumerate(self.__textures.items()):
+            texture_ctx.use(i)
             self.__material.shader_program.set_uniform(name, i)
 
         self.__vao.render()
@@ -53,7 +52,6 @@ class Graphics:
     def update_texture(self, texture_name, new_data):
         if texture_name not in self.__textures:
             raise ValueError(f"No existe la textura {texture_name}")
-
         texture_obj, texture_ctx = self.__textures[texture_name]
         texture_obj.update_data(new_data)
         texture_ctx.write(texture_obj.get_bytes())
@@ -76,9 +74,9 @@ class ComputeGraphics(Graphics):
         amin, amax = self.__model.aabb
         primitives.append({"aabb_min": amin, "aabb_max": amax})
 
-    def create_transformation_matrix(self, transformations_matrix, index):
+    def create_transformation_matrix(self, trasnformation_matrix, index):
         m = self.__model.get_model_matrix()
-        transformations_matrix[index, :] = np.array(m.to_list(), dtype="f4").reshape(16)
+        trasnformation_matrix[index, :] = np.array(m.to_list(), dtype="f4").reshape(16)
 
     def create_inverse_transformation_matrix(self, inverse_transformations_matrix, index):
         m = self.__model.get_model_matrix()

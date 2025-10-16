@@ -30,7 +30,3 @@ class Window(pyglet.window.Window):
         u=x/self.width
         v=y/self.height
         self.scene.on_mouse_click(u,v)
-
-    def on_resize(self, width, height):
-        if self.scene:
-            self.scene.on_resize(width, height)

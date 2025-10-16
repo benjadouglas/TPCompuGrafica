@@ -4,7 +4,6 @@ import glm
 
 class ShaderProgram:
     def __init__(self, ctx, vertex_shader_path, fragment_shader_path):
-        # Cargar el código de los shaders desde archivos
         with open(vertex_shader_path) as file:
             vertex_shader = file.read()
 
@@ -61,7 +60,6 @@ class ComputeShaderProgram:
                 uniform.write(value.to_bytes())
             elif hasattr(uniform, "value"):
                 uniform.value = value
-
 
     def run(self, groups_x, groups_y, groups_z=1):
         self.prog.run(group_x=groups_x, group_y=groups_y, group_z=groups_z)

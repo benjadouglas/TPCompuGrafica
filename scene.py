@@ -2,6 +2,9 @@ from graphics import Graphics
 import glm
 from raytracer import RayTracer, RayTracerGPU
 import math
+import numpy as np
+from raytracer import RayTracerGPU
+from graphics import ComputeGraphics
 
 class Scene:
     def __init__(self, ctx, camera):
@@ -50,9 +53,7 @@ class RayScene(Scene):
     def start(self):
         self.raytracer.render_frame(self.objects)
         if "Sprite" in self.graphics:
-            self.graphics["Sprite"].update_texture(
-                "u_texture", self.raytracer.get_texture()
-            )
+            self.graphics["Sprite"].update_texture("u_texture", self.raytracer.get_texture())
 
     def render(self):
         super().render()
@@ -72,7 +73,6 @@ class RaySceneGPU(Scene):
 
         self.output_graphics = Graphics(ctx, output_model, output_material)
         self.raytracer = RayTracerGPU(self.ctx, self.camera, self.width, self.height, self.output_graphics)
-
         super().__init__(self.ctx, self.camera)
 
     def add_object(self, model, material):
@@ -80,15 +80,15 @@ class RaySceneGPU(Scene):
         self.graphics[model.name] = ComputeGraphics(self.ctx, model, material)
 
     def start(self):
-         print("Start Raytracing!")
-         self.primitives = []
-         n = len(self.objects)
-         self.models_f = np.zeros((n, 16), dtype='f4')
-         self.inv_f    = np.zeros((n, 16), dtype='f4')
-         self.mats_f   = np.zeros((n, 4), dtype='f4')
+        print("Start Raytracing!")
+        self.primitives = []
+        n = len(self.objects)
+        self.models_f = np.zeros((n, 16), dtype='f4')
+        self.inv_f    = np.zeros((n, 16), dtype='f4')
+        self.mats_f   = np.zeros((n, 4), dtype='f4')
 
-         self._update_matrix()
-         self._matrix_to_ssbo()
+        self._update_matrix()
+        self._matrix_to_ssbo()
 
     def render(self):
         self.time += 0.01
